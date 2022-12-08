@@ -1,6 +1,9 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import "../styles/globals.css";
+import { AppProps } from "next/app";
+
+import { useNotification } from "../utils/notification";
 
 export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+  useNotification();
+  return <Component {...pageProps} />;
 }
