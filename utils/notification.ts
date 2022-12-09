@@ -9,10 +9,29 @@ export function useNotification() {
       if (ref.current == 0) {
         ref.current += 1;
         await OneSignal.init({
-          appId: "f01a89c0-c069-4b63-9529-7e9e3581dc2e",
+          appId: process.env.NEXT_PUBLIC_ONE_SIGNAL_APP_ID || "",
           allowLocalhostAsSecureOrigin: true,
         });
       }
     })();
   }, []);
+}
+
+export async function requestPermission() {
+  const perm = await OneSignal.isPushNotificationsEnabled();
+
+  if (!perm) {
+    alert("We need notification permission to notify you about your tasks.");
+    await OneSignal.showNativePrompt();
+  }
+}
+
+export async function getNotificationId() {
+  const perm = await OneSignal.isPushNotificationsEnabled();
+  if (perm) {
+    const id = await OneSignal.getUserId();
+    return id;
+  }
+
+  return null;
 }
