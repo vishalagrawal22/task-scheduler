@@ -3,16 +3,21 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 import {
-  USER_NOT_FOUND,
-  WRONG_PASSWORD,
-  loginWithEmailAndPassword,
   loginOrRegisterWithGooglePopup,
   useUser,
+  registerWithEmailAndPassword,
+  EMAIL_ALREADY_TAKEN,
+  INVALID_EMAIL,
 } from "../utils/auth";
 
-interface LoginData {
+interface RegisterData {
   email: string;
   password: string;
+  confirmPassword: string;
+}
+
+interface RegisterError {
+  confirmPassword?: string;
 }
 
 function validateEmail(email: string) {
@@ -32,7 +37,13 @@ function validatePassword(password: string) {
   }
 }
 
-export default function Login() {
+function validateConfirmPassword(password: string, confirmPassword: string) {
+  if (password != confirmPassword) {
+    return "Password does not match!";
+  }
+}
+
+export default function Register() {
   const router = useRouter();
   const { loading, user, error } = useUser();
 
@@ -42,19 +53,39 @@ export default function Login() {
     return <div className="m-4">{error.message}</div>;
   } else {
     if (!user) {
-      const initialValues: LoginData = { email: "", password: "" };
+      const initialValues: RegisterData = {
+        email: "",
+        password: "",
+        confirmPassword: "",
+      };
       return (
         <div className="h-full flex items-center justify-center">
           <Formik
             initialValues={initialValues}
+            validate={(values: RegisterData) => {
+              const errors: RegisterError = {};
+              if (values.password !== values.confirmPassword) {
+                errors.confirmPassword = validateConfirmPassword(
+                  values.password,
+                  values.confirmPassword
+                );
+              }
+              return errors;
+            }}
             onSubmit={async (values, { setSubmitting, setFieldError }) => {
               try {
-                await loginWithEmailAndPassword(values.email, values.password);
+                await registerWithEmailAndPassword(
+                  values.email,
+                  values.password
+                );
               } catch (err) {
-                if (err === USER_NOT_FOUND) {
-                  setFieldError("email", "Email not registered");
-                } else if (err === WRONG_PASSWORD) {
-                  setFieldError("password", "Wrong password");
+                if (err === EMAIL_ALREADY_TAKEN) {
+                  setFieldError(
+                    "email",
+                    "Email already taken (Try login instead)"
+                  );
+                } else if (err === INVALID_EMAIL) {
+                  setFieldError("email", "Invalid email");
                 } else {
                   console.error(err);
                 }
@@ -67,21 +98,20 @@ export default function Login() {
                 <div className="bg-white border shadow-lg rounded px-8 pt-6 pb-8">
                   <p
                     tabIndex={0}
-                    aria-label="Login to your account"
+                    aria-label="Register an account"
                     className="text-xl font-extrabold leading-6 text-gray-800"
                   >
-                    Login to your account
+                    Register an account
                   </p>
                   <p className="text-sm mt-4 font-medium leading-none text-gray-500">
-                    Dont have account?{" "}
+                    Already have account?{" "}
                     <span
                       tabIndex={0}
                       role="link"
-                      aria-label="Register here"
+                      aria-label="Login here"
                       className="text-sm font-medium leading-none underline text-gray-800 cursor-pointer"
                     >
-                      {" "}
-                      <Link href="/register">Register here</Link>
+                      <Link href="/login">Login here</Link>
                     </span>
                   </p>
                   <button
@@ -172,13 +202,32 @@ export default function Login() {
                         className="absolute text-red-500 text-xs italic"
                       />
                     </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="confirm-password"
+                      >
+                        Confirm Password
+                      </label>
+                      <Field
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline"
+                        id="confirm-password"
+                        name="confirmPassword"
+                        type="password"
+                      />
+                      <ErrorMessage
+                        name="confirmPassword"
+                        component="p"
+                        className="absolute text-red-500 text-xs italic"
+                      />
+                    </div>
                     <div className="flex items-center justify-between mt-6">
                       <button
                         className="mx-auto mt-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                         type="submit"
                         disabled={isSubmitting}
                       >
-                        Login
+                        Register
                       </button>
                     </div>
                   </Form>

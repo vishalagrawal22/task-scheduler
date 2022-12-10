@@ -1,5 +1,6 @@
 import {
   AuthError,
+  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -11,6 +12,8 @@ import { auth } from "../firebase-config";
 
 export const USER_NOT_FOUND = "auth/user-not-found";
 export const WRONG_PASSWORD = "auth/wrong-password";
+export const EMAIL_ALREADY_TAKEN = "auth/email-already-in-use";
+export const INVALID_EMAIL = "auth/invalid-email";
 
 export async function loginWithEmailAndPassword(
   email: string,
@@ -25,17 +28,34 @@ export async function loginWithEmailAndPassword(
     } else if (authError.code === "auth/wrong-password") {
       throw WRONG_PASSWORD;
     }
-    throw err;
+    throw authError.message;
   }
 }
 
-export async function loginWithGooglePopup() {
-  const googleProvider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
+export async function loginOrRegisterWithGooglePopup() {
   await signInWithPopup(auth, googleProvider);
 }
 
 export async function logout() {
   await signOut(auth);
+}
+
+export async function registerWithEmailAndPassword(
+  email: string,
+  password: string
+) {
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+  } catch (err) {
+    const authError = err as AuthError;
+    if (authError.code === EMAIL_ALREADY_TAKEN) {
+      throw EMAIL_ALREADY_TAKEN;
+    } else if (authError.code === INVALID_EMAIL) {
+      throw INVALID_EMAIL;
+    }
+    throw authError.message;
+  }
 }
 
 export function useUser() {
