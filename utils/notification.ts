@@ -35,3 +35,11 @@ export async function getNotificationId() {
 
   return null;
 }
+
+export async function setUserId(userId: string) {
+  OneSignal.setExternalUserId(userId);
+}
+
+export async function removeUserId() {
+  OneSignal.removeExternalUserId();
+}
