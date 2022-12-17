@@ -8,7 +8,7 @@ import {
   registerWithEmailAndPassword,
   EMAIL_ALREADY_TAKEN,
   INVALID_EMAIL,
-} from "../utils/auth";
+} from "../utils/auth/client";
 
 interface RegisterData {
   email: string;

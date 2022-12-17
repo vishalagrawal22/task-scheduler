@@ -8,7 +8,7 @@ import {
 } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { auth } from "../firebase-config";
+import { auth } from "../../firebase-config/client";
 
 export const USER_NOT_FOUND = "auth/user-not-found";
 export const WRONG_PASSWORD = "auth/wrong-password";
@@ -65,4 +65,9 @@ export function useUser() {
     loading,
     error: error as AuthError,
   };
+}
+
+export async function getAuthToken() {
+  const authToken = await auth.currentUser?.getIdToken();
+  return authToken;
 }

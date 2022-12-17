@@ -26,16 +26,6 @@ export async function requestPermission() {
   }
 }
 
-export async function getNotificationId() {
-  const perm = await OneSignal.isPushNotificationsEnabled();
-  if (perm) {
-    const id = await OneSignal.getUserId();
-    return id;
-  }
-
-  return null;
-}
-
 export async function setUserId(userId: string) {
   OneSignal.setExternalUserId(userId);
 }

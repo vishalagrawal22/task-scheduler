@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import * as NotificationService from "../utils/notification";
 const { useNotification } = NotificationService;
-import { useUser } from "../utils/auth";
+import { useUser } from "../utils/auth/client";
 
 export default function App({ Component, pageProps }: AppProps) {
   const { user, loading, error } = useUser();
@@ -15,8 +15,6 @@ export default function App({ Component, pageProps }: AppProps) {
         if (user) {
           await NotificationService.setUserId(user.uid);
           await NotificationService.requestPermission();
-          const id = await NotificationService.getNotificationId();
-          console.log(id);
         } else {
           await NotificationService.removeUserId();
         }

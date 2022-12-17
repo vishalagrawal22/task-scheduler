@@ -5,7 +5,9 @@ import createModel from "../utils/db";
 interface ITask {
   title: String;
   description: String;
+  createdBy: String;
   scheduledDate: Date;
+  scheduledDateString: String;
   completed: Boolean;
 }
 
@@ -19,14 +21,26 @@ const taskSchema = new Schema<ITask, TaskModel>({
     maxlength: 100,
   },
   description: String,
+  createdBy: {
+    type: String,
+    required: true,
+  },
   scheduledDate: {
     type: Date,
     required: true,
+  },
+  scheduledDateString: {
+    type: String,
   },
   completed: {
     type: Boolean,
     default: false,
   },
+});
+
+taskSchema.pre("save", function (next) {
+  this.scheduledDateString = this.scheduledDate.toLocaleDateString();
+  next();
 });
 
 const Task = createModel<ITask, TaskModel>("Task", taskSchema);

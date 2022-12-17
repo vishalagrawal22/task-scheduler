@@ -8,7 +8,7 @@ import {
   loginWithEmailAndPassword,
   loginOrRegisterWithGooglePopup,
   useUser,
-} from "../utils/auth";
+} from "../utils/auth/client";
 
 interface LoginData {
   email: string;

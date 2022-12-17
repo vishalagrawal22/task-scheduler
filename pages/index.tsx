@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-import { logout, useUser } from "../utils/auth";
+import { logout, useUser } from "../utils/auth/client";
 
 export default function Home() {
   const router = useRouter();
