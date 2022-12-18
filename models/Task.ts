@@ -2,14 +2,7 @@ import { Model, Schema } from "mongoose";
 
 import createModel from "../utils/db";
 
-interface ITask {
-  title: String;
-  description: String;
-  createdBy: String;
-  scheduledDate: Date;
-  scheduledDateString: String;
-  completed: Boolean;
-}
+import { ITask } from "../utils/interfaces/Task";
 
 type TaskModel = Model<ITask, {}>;
 
