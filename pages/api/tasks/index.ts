@@ -42,6 +42,7 @@ async function handleRetrieveTask(req: NextApiRequest, res: NextApiResponse) {
 
 async function handleCreateTask(req: NextApiRequest, res: NextApiResponse) {
   const userId = await getUserId(req);
+
   const { title, scheduledDate } = req.body;
   const taskData: ITask = {
     title,
