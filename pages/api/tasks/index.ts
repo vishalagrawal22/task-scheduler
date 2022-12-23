@@ -11,10 +11,8 @@ interface PaginationInfo {
   skip?: number;
 }
 
-interface TaskInfo {
-  createdBy: string;
-  scheduledDateString?: string;
-}
+type TaskInfo = Pick<ITask, "createdBy" | "scheduledDateString">;
+type TaskData = Omit<ITask, "_id">;
 
 async function handleRetrieveTask(req: NextApiRequest, res: NextApiResponse) {
   const userId = await getUserId(req);
@@ -44,7 +42,7 @@ async function handleCreateTask(req: NextApiRequest, res: NextApiResponse) {
   const userId = await getUserId(req);
 
   const { title, scheduledDate } = req.body;
-  const taskData: ITask = {
+  const taskData: TaskData = {
     title,
     createdBy: userId,
     scheduledDate,
