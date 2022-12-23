@@ -14,7 +14,7 @@ export default function Home() {
   useEffect(() => {
     (async function fetchTasks() {
       const authToken = await getAuthToken();
-      const response = await fetch("/api/tasks", {
+      const response = await fetch("/api/tasks?offset=6&limit=3", {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
