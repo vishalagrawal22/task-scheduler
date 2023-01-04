@@ -1,15 +1,51 @@
 import { useState } from "react";
 import { DateTime } from "luxon";
 
-import { ITask } from "../utils/interfaces/Task";
+import { Task } from "../utils/data";
+import { getAuthToken } from "../utils/auth/client";
 
 const MAX_SHORT_DESCRIPTION_LENGTH = 80;
 
-export function Task({ task }: { task: ITask }) {
+export function Task({ task }: { task: Task }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const date = DateTime.fromISO(new Date(task.scheduledDate).toISOString());
   const humanReadable = date.toLocaleString(DateTime.DATETIME_MED);
+
+  async function handleCompletedChange() {
+    const authToken = await getAuthToken();
+    const response = await fetch(`/api/tasks/${task._id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        completed: !task.completed,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+    }
+  }
+
+  async function handleDeleteTask() {
+    const authToken = await getAuthToken();
+    const response = await fetch(`/api/tasks/${task._id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+    }
+  }
 
   return (
     <div className="flex flex-col w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-md">
@@ -48,7 +84,7 @@ export function Task({ task }: { task: ITask }) {
                   Edit
                 </a>
               </li>
-              <li>
+              <li onClick={handleDeleteTask}>
                 <a
                   href="#"
                   className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
@@ -88,13 +124,19 @@ export function Task({ task }: { task: ITask }) {
           </span>
         )}
         {!task.completed ? (
-          <div className="flex mt-4 space-x-3 md:mt-6">
+          <div
+            className="flex mt-4 space-x-3 md:mt-6"
+            onClick={handleCompletedChange}
+          >
             <span className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
               Mark as complete
             </span>
           </div>
         ) : (
-          <div className="flex mt-4 space-x-3 md:mt-6">
+          <div
+            className="flex mt-4 space-x-3 md:mt-6"
+            onClick={handleCompletedChange}
+          >
             <span className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-gray-600 rounded-lg hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
               Mark as incomplete
             </span>
